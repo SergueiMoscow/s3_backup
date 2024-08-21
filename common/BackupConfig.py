@@ -1,9 +1,7 @@
 import json
 
-from pydantic import ValidationError
-
 from common.settings import settings
-from schemas import BackupItem, S3StorageDTO, S3StorageRelDTO, BackupStorage
+from schemas import BackupStorage
 
 
 class BackupConfig:
