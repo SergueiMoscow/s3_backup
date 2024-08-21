@@ -1,0 +1,7 @@
+/venv
+config.json
+my_readme.txt
+.env
+/test_data
+.pytest_cache
+*.db
