@@ -74,6 +74,7 @@ class S3BackupFileDTO(S3BackupFileAddDTO):
     """
     id: int | None = None
     created_at: datetime | None = None
+    storage_id: int | None = None
 
 
 # For DB Models with relations:

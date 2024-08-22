@@ -8,6 +8,7 @@ import pytest
 from unittest.mock import patch, AsyncMock
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures('apply_migrations')
 @patch("services.S3Client.S3Client.get_client")
 async def test_upload_file(mock_get_client):
     mock_s3_client = AsyncMock()

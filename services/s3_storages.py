@@ -2,7 +2,8 @@ import copy
 
 from db.engine import Session
 from db.models import S3StorageOrm
-from repositories.s3_storages import create_storage, update_storage, get_storage_by_id, delete_storage
+from repositories.s3_storages import create_storage, update_storage, get_storage_by_id, delete_storage, \
+    get_storage_by_name
 from schemas import S3StorageDTO
 from services.Encryption import encryption_service
 
@@ -66,3 +67,11 @@ def delete_storage_service(s3_storage_id: int) -> None:
     with Session() as session:
         s3_storage = get_storage_by_id(session, s3_storage_id)
         delete_storage(s3_storage)
+
+
+def create_or_get_storage_by_name(s3_storage: S3StorageDTO) -> S3StorageDTO:
+    with Session() as session:
+        storage_orm = get_storage_by_name(session, s3_storage.name)
+        if storage_orm is not None:
+            return S3StorageDTO.model_validate(storage_orm, from_attributes=True)
+    return create_s3_storage_service(s3_storage)

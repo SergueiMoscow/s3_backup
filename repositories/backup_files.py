@@ -1,4 +1,5 @@
 from sqlalchemy import update, and_, select
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session
 
 from db.models import BackupFileOrm
@@ -29,3 +30,22 @@ def get_backup_file_by_path_and_name(session: Session, path: str, name: str) -> 
             BackupFileOrm.name == name,
         )
     ).one_or_none()
+
+
+def get_backup_file_by_details(session: Session, storage_id: int, path: str, file_name: str) -> BackupFileOrm | None:
+    """
+    Возвращает экземпляр BackupFileOrm по указанным параметрам.
+
+    :param session: Объект сессии SQLAlchemy.
+    :param storage_id: Идентификатор хранилища.
+    :param path: Путь к файлу.
+    :param file_name: Имя файла.
+    :return: Экземпляр BackupFileOrm.
+    :raises NoResultFound: Если не найден ни один файл с указанными параметрами.
+    """
+    backup_file = session.query(BackupFileOrm).filter_by(
+        storage_id=storage_id,
+        path=path,
+        file_name=file_name
+    ).one_or_none()
+    return backup_file
