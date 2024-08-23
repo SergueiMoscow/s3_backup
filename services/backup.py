@@ -1,4 +1,6 @@
 import os
+import time
+from datetime import datetime, timezone
 from typing import List
 from urllib.parse import urljoin
 
@@ -79,13 +81,14 @@ async def create_upload_file_info(storage: S3StorageDTO, backup_item: BackupItem
     file_path, file_name = os.path.split(backup_item.path)
     file_size = os.path.getsize(backup_item.path)
     file_time = os.path.getmtime(backup_item.path)
+    file_time_utc = datetime.fromtimestamp(file_time, tz=timezone.utc)
     path = file_path.replace(top_level_path, '')
     backup_file_dto = S3BackupFileDTO(
         storage_id = storage.id,
         path=path,
         file_name=file_name,
         file_size=file_size,
-        file_time=file_time,
+        file_time=file_time_utc,
     )
     return backup_file_dto
 
@@ -116,11 +119,15 @@ async def backup_item(storage: S3StorageDTO, client: S3Client, item: BackupItem,
             if upload_file_dto is None:
                 upload_file_dto = await create_upload_file_info(storage=storage, backup_item=item, top_level_path=top_level_path)
             logger.info(f'Uploading {object_name}')
-            await client.upload_file(
-                bucket_name=item.bucket,
-                file_path=item.path,
-                object_name=object_name,
-            )
+            item_path_struct_time = time.gmtime(os.path.getmtime(item.path))
+            item_path_datetime = datetime(*item_path_struct_time[:6])
+            if os.path.getsize(item.path) != upload_file_dto.file_size or item_path_datetime != upload_file_dto.file_time.replace(microsecond=0):
+
+                await client.upload_file(
+                    bucket_name=item.bucket,
+                    file_path=item.path,
+                    object_name=object_name,
+                )
             # Регистрируем файл в БД
             await register_uploaded_file(storage_id=storage.id, upload_file_dto=upload_file_dto)
             logger.info(f'{object_name} uploaded to {item.bucket}')

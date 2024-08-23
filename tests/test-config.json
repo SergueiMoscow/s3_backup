@@ -4,14 +4,14 @@
       {
         "name": "Selectel",
         "url": "https://s3.storage.selcloud.ru",
-        "access_key": "your_access_key",
-        "secret_key": "your_secret_key",
+        "access_key": "not needed for test",
+        "secret_key": "not needed for test",
         "items": [
           {
             "name": "Photo",
-            "path": "/Users/sergey/PycharmProjects/s3_backup/test_data",
+            "path": "this path will be changed for test",
             "bucket": "your_bucket_name",
-            "include": ["jpg", "avi", "mov", "mp4", "pdf"],
+            "include": ["png", "avi", "mov", "mp4", "jpg"],
             "exclude": []
           }
         ]
